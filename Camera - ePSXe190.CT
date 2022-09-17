@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheatTable CheatEngineTableVersion="42">
+  <CheatEntries>
+    <CheatEntry>
+      <ID>1</ID>
+      <Description>"Base"</Description>
+      <Options moAlwaysHideChildren="1" moManualExpandCollapse="1" moAllowManualCollapseAndExpand="1"/>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <Color>008000</Color>
+      <VariableType>Array of byte</VariableType>
+      <ByteLength>10</ByteLength>
+      <Address>"ePSXe_3.exe"+19D48</Address>
+      <Offsets>
+        <Offset>0</Offset>
+      </Offsets>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>2</ID>
+          <Description>"End"</Description>
+          <ShowAsHex>1</ShowAsHex>
+          <ShowAsSigned>0</ShowAsSigned>
+          <Color>008000</Color>
+          <VariableType>Byte</VariableType>
+          <Address>"ePSXe_3.exe"+19D48</Address>
+          <Offsets>
+            <Offset>1FFFFF</Offset>
+          </Offsets>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>11</ID>
+      <Description>"------------------------------------"</Description>
+      <GroupHeader>1</GroupHeader>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>2559</ID>
+      <Description>"control inputs"</Description>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <Color>FF0000</Color>
+      <VariableType>Byte</VariableType>
+      <Address>"ePSXe_3.exe"+19D48</Address>
+      <Offsets>
+        <Offset>5F6F0</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>2524</ID>
+      <Description>"camera"</Description>
+      <Options moHideChildren="1" moManualExpandCollapse="1" moAllowManualCollapseAndExpand="1"/>
+      <GroupHeader>1</GroupHeader>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>2549</ID>
+          <Description>"camera address"</Description>
+          <ShowAsHex>1</ShowAsHex>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>Array of byte</VariableType>
+          <ByteLength>14</ByteLength>
+          <Address>readInteger(getAddressList().getMemoryRecordByDescription('Base').CurrentAddress+ 0x507A8)-0x80000000+getAddressList().getMemoryRecordByDescription('Base').CurrentAddress+0x4C</Address>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>2525</ID>
+          <Description>"Keyboard Camera Controller script"</Description>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>{$lua}
+-- -------------------------------------------------
+-- DW2 Camera Controller Script for epsxe 1.9.0
+--    made by acemon33
+-- -------------------------------------------------
+
+--[[
+used keys:
+
+0, 9 =&gt; depth
+I, O =&gt; Y angle
+J, K =&gt; Y axis
+N, M =&gt; ?
+Y, U =&gt; ?
+G, H =&gt; X axis
+Ctrl + R =&gt; reset camera values in Domain
+
+]]
+
+[ENABLE]
+function checkKeys(timer)
+  local cameraAddress = AddressList.getMemoryRecordByDescription('camera address')
+  local speed = 25;
+
+  if isKeyPressed(VK_O) then
+	writeSmallInteger(cameraAddress.CurrentAddress + 0x7A, (readSmallInteger(cameraAddress.CurrentAddress + 0x7A) + speed))
+  end
+  if isKeyPressed(VK_I) then
+	writeSmallInteger(cameraAddress.CurrentAddress + 0x7A, (readSmallInteger(cameraAddress.CurrentAddress + 0x7A) - speed))
+  end
+
+  if isKeyPressed(VK_K) then
+	writeSmallInteger(cameraAddress.CurrentAddress, (readSmallInteger(cameraAddress.CurrentAddress) + speed * 3))
+  end
+  if isKeyPressed(VK_J) then
+	writeSmallInteger(cameraAddress.CurrentAddress, (readSmallInteger(cameraAddress.CurrentAddress) - speed * 3))
+  end
+
+  if isKeyPressed(VK_M) then
+	writeSmallInteger(cameraAddress.CurrentAddress + 0x4, (readSmallInteger(cameraAddress.CurrentAddress + 0x4) + speed * 4))
+  end
+  if isKeyPressed(VK_N) then
+	writeSmallInteger(cameraAddress.CurrentAddress + 0x4, (readSmallInteger(cameraAddress.CurrentAddress + 0x4) - speed * 4))
+  end
+
+  if isKeyPressed(VK_U) then
+	writeSmallInteger(cameraAddress.CurrentAddress + 0x8, (readSmallInteger(cameraAddress.CurrentAddress + 0x8) + speed * 3))
+  end
+  if isKeyPressed(VK_Y) then
+	writeSmallInteger(cameraAddress.CurrentAddress + 0x8, (readSmallInteger(cameraAddress.CurrentAddress + 0x8) - speed * 3))
+  end
+
+  if isKeyPressed(VK_H) then
+	writeSmallInteger(cameraAddress.CurrentAddress + 0xC, (readSmallInteger(cameraAddress.CurrentAddress + 0xC) + speed * 3))
+  end
+  if isKeyPressed(VK_G) then
+	writeSmallInteger(cameraAddress.CurrentAddress + 0xC, (readSmallInteger(cameraAddress.CurrentAddress + 0xC) - speed * 3))
+  end
+
+  if isKeyPressed(VK_CONTROL) and isKeyPressed(VK_R) then
+    writeSmallInteger(cameraAddress.CurrentAddress, 52736)
+	writeSmallInteger(cameraAddress.CurrentAddress + 0x2, 0xFFFF)
+	writeSmallInteger(cameraAddress.CurrentAddress + 0x4, 57856)
+	writeSmallInteger(cameraAddress.CurrentAddress + 0x8, 0)
+	writeSmallInteger(cameraAddress.CurrentAddress + 0xA, 0)
+	writeSmallInteger(cameraAddress.CurrentAddress + 0xC, 0)
+    writeSmallInteger(cameraAddress.CurrentAddress + 0x14, 0x0230)
+	writeSmallInteger(cameraAddress.CurrentAddress + 0x7A, 0)
+  end
+
+end
+
+function checkKeys2(timer)
+  local cameraAddress = AddressList.getMemoryRecordByDescription('camera address')
+  if isKeyPressed(VK_9) then
+	writeByte(cameraAddress.CurrentAddress + 0x15, (readByte(cameraAddress.CurrentAddress + 0x15) + 1))
+  end
+  if isKeyPressed(VK_0) then
+	writeByte(cameraAddress.CurrentAddress + 0x15, (readByte(cameraAddress.CurrentAddress + 0x15) - 1))
+  end
+end
+
+t = createTimer(nil)
+t2 = createTimer(nil)
+timer_setInterval(t, 20)
+timer_setInterval(t2, 130)
+timer_onTimer(t, checkKeys)
+timer_onTimer(t2, checkKeys2)
+timer_setEnabled(t, true)
+timer_setEnabled(t2, true)
+
+[DISABLE]
+timer_setEnabled(t, false)
+timer_setEnabled(t2, false)
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>2557</ID>
+          <Description>"Game Input Camera Controller script"</Description>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>{$lua}
+
+-- -------------------------------------------------
+-- DW2 Camera Controller Script for epsxe 1.9.0
+--    made by acemon33
+-- -------------------------------------------------
+
+--[[
+used Buttons:
+-------------
+
+L1 =&gt; Rotating +
+R1 =&gt; Rotating -
+L2 =&gt; ? +
+R2 =&gt; ? -
+L1 + R1 =&gt; pitch +
+L2 + R2 =&gt; pitch -
+L1 + L2 =&gt; zooming +
+R1 + R2 =&gt; zooming -
+
+L1 + /\ =&gt; reset camera-view in Domain
+L1 + D =&gt; reset camera-view in Digital City
+
+R1 + /\ =&gt; deactivate camera-view in Battle
+R1 + D =&gt; activate free camera-view in Battle
+
+]]
+
+[ENABLE]
+function checkKeys(timer)
+  local cameraAddress = AddressList.getMemoryRecordByDescription('camera address').CurrentAddress; -- camera entity
+  local inputAddress = AddressList.getMemoryRecordByDescription('control inputs').CurrentAddress;  -- game input handler
+  local speed = 50;
+  local temp = 0;
+
+  local R1 = readInteger(inputAddress + 0x20) == 0xFFFFFFFF;
+  local L1 = readInteger(inputAddress + 0x28) == 0xFFFFFFFF;
+  local R2 = readInteger(inputAddress + 0x24) == 0xFFFFFFFF;
+  local L2 = readInteger(inputAddress + 0x2C) == 0xFFFFFFFF;
+  local traingle = readInteger(inputAddress + 0x1C) == 0xFFFFFFFF;
+  local square = readInteger(inputAddress + 0x18) == 0xFFFFFFFF;
+
+  if R1 and not L1 and not R2 then  -- rotating
+    temp = readSmallInteger(cameraAddress + 0x7E) + speed;
+	writeSmallInteger(cameraAddress + 0x7E, temp);
+  elseif L1 and not R1 and not L2 then
+	temp = readSmallInteger(cameraAddress + 0x7E) - speed;
+	writeSmallInteger(cameraAddress + 0x7E, temp);
+  end
+
+  if L2 and not R2 and not L1 then
+    temp = readSmallInteger(cameraAddress + 0x4) + speed * 2;
+	writeSmallInteger(cameraAddress + 0x4, temp);
+  elseif R2 and not L2 and not R1 then
+	temp = readSmallInteger(cameraAddress + 0x4) - speed * 2;
+	writeSmallInteger(cameraAddress + 0x4, temp);
+  end
+
+  if L1 and R1 then
+    temp = readInteger(cameraAddress + 0x10) + 0x100;
+	writeInteger(cameraAddress + 0x10, temp);
+  elseif L2 and R2 then
+	temp = readInteger(cameraAddress + 0x10) - 0x100;
+	writeInteger(cameraAddress + 0x10, temp);
+  end
+
+  if L1 and L2 then  -- zooming
+    temp = readInteger(cameraAddress + 0x19) + 1;
+	writeInteger(cameraAddress + 0x19, temp);
+  elseif R1 and R2 then
+	temp = readInteger(cameraAddress + 0x19) - 1;
+	writeInteger(cameraAddress + 0x19, temp);
+  end
+
+  if L1 and traingle then  -- reset overworld camera-view
+    writeSmallInteger(cameraAddress + 0x4, 0xCE00);
+	writeSmallInteger(cameraAddress + 0x6, 0xFFFF);
+	writeSmallInteger(cameraAddress + 0x8, 57856);
+	writeSmallInteger(cameraAddress + 0xC, 0);
+	writeSmallInteger(cameraAddress + 0xE, 0);
+	writeSmallInteger(cameraAddress + 0x10, 0);
+    writeSmallInteger(cameraAddress + 0x18, 0x0230);
+    writeByte(cameraAddress + 0x19, 0x0);
+	writeSmallInteger(cameraAddress + 0x7E, 0);
+    sleep(250);
+  end
+  if L1 and square then  -- reset digital city camera-view
+    writeSmallInteger(cameraAddress + 0x6, 0xFFFF);
+	writeSmallInteger(cameraAddress + 0x8, 0xA600);
+	writeSmallInteger(cameraAddress + 0xC, 0x0);
+	writeSmallInteger(cameraAddress + 0xE, 0x0);
+	writeSmallInteger(cameraAddress + 0x10, 0x0);
+    writeSmallInteger(cameraAddress + 0x18, 0x0);
+	writeSmallInteger(cameraAddress + 0x7E, 0x0);
+    sleep(250);
+  end
+
+  if R1 and traingle then  -- reset camera-view
+    local base = AddressList.getMemoryRecordByDescription('Base').CurrentAddress;
+    if readInteger(base + 0x705E0) == 0x0 then  -- restore instructions to origin
+      writeInteger(base + 0x705E0, 0xA603007E);
+      writeInteger(base + 0x70618, 0xAE030004);
+      writeInteger(base + 0x70650, 0xAE030010);
+      writeByte(cameraAddress + 0x19, 0x5);
+      sleep(250);
+    end
+  end
+  if R1 and square then  -- removing camera constraints
+    local base = AddressList.getMemoryRecordByDescription('Base').CurrentAddress;
+    if readInteger(base + 0x705E0) == 0xA603007E then  -- noop instructions
+      writeInteger(base + 0x705E0, 0x0);
+      writeInteger(base + 0x70618, 0x0);
+      writeInteger(base + 0x70650, 0x0);
+      sleep(250);
+    end
+  end
+
+end
+
+t = createTimer(nil)
+timer_setInterval(t, 20)
+timer_onTimer(t, checkKeys)
+timer_setEnabled(t, true)
+
+[DISABLE]
+timer_setEnabled(t, false)
+</AssemblerScript>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+  </CheatEntries>
+  <UserdefinedSymbols>
+    <SymbolEntry>
+      <Name>speedModifier</Name>
+      <Address>00F00000</Address>
+    </SymbolEntry>
+  </UserdefinedSymbols>
+  <Structures StructVersion="2">
+    <Structure Name="Camera" AutoFill="0" AutoCreate="1" DefaultHex="0" AutoDestroy="0" DoNotSaveLocal="0" RLECompression="1" AutoCreateStructsize="4096">
+      <Elements>
+        <Element Offset="0" Vartype="2 Bytes" Bytesize="2" OffsetHex="00000000" Description="." DisplayMethod="hexadecimal"/>
+        <Element Offset="2" Vartype="2 Bytes" Bytesize="2" OffsetHex="00000002" Description=".-flag" DisplayMethod="hexadecimal"/>
+        <Element Offset="4" Vartype="2 Bytes" Bytesize="2" OffsetHex="00000004" Description="Y" DisplayMethod="hexadecimal"/>
+        <Element Offset="6" Vartype="2 Bytes" Bytesize="2" OffsetHex="00000006" Description="Y-flag" DisplayMethod="hexadecimal"/>
+        <Element Offset="8" Vartype="2 Bytes" Bytesize="2" OffsetHex="00000008" Description="Y" DisplayMethod="hexadecimal"/>
+        <Element Offset="10" Vartype="2 Bytes" Bytesize="2" OffsetHex="0000000A" Description="Y-flag" DisplayMethod="hexadecimal"/>
+        <Element Offset="12" Vartype="2 Bytes" Bytesize="2" OffsetHex="0000000C" Description="roll" DisplayMethod="hexadecimal"/>
+        <Element Offset="14" Vartype="2 Bytes" Bytesize="2" OffsetHex="0000000E" Description="roll-flag" DisplayMethod="hexadecimal"/>
+        <Element Offset="15" Vartype="Byte" Bytesize="1" OffsetHex="0000000F" DisplayMethod="unsigned integer"/>
+        <Element Offset="16" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000010" Description="pitch" DisplayMethod="hexadecimal"/>
+        <Element Offset="20" Vartype="Byte" Bytesize="1" OffsetHex="00000014" DisplayMethod="unsigned integer"/>
+        <Element Offset="21" Vartype="Byte" Bytesize="1" OffsetHex="00000015" Description="." DisplayMethod="hexadecimal"/>
+        <Element Offset="22" Vartype="Byte" Bytesize="1" RLECount="3" OffsetHex="00000016" DisplayMethod="unsigned integer"/>
+        <Element Offset="25" Vartype="Byte" Bytesize="1" OffsetHex="00000019" Description="depth" DisplayMethod="hexadecimal"/>
+        <Element Offset="26" Vartype="Byte" Bytesize="1" RLECount="86" OffsetHex="0000001A" DisplayMethod="unsigned integer"/>
+        <Element Offset="112" Vartype="2 Bytes" Bytesize="2" OffsetHex="00000070" Description="may size in city" DisplayMethod="hexadecimal"/>
+        <Element Offset="114" Vartype="Byte" Bytesize="1" RLECount="7" OffsetHex="00000072" DisplayMethod="unsigned integer"/>
+        <Element Offset="121" Vartype="Byte" Bytesize="1" OffsetHex="00000079" DisplayMethod="hexadecimal"/>
+        <Element Offset="122" Vartype="2 Bytes" Bytesize="2" RLECount="2" OffsetHex="0000007A" Description="." DisplayMethod="hexadecimal"/>
+        <Element Offset="126" Vartype="2 Bytes" Bytesize="2" OffsetHex="0000007E" Description="yaw" DisplayMethod="hexadecimal"/>
+      </Elements>
+    </Structure>
+    <Structure Name="control" AutoFill="0" AutoCreate="1" DefaultHex="0" AutoDestroy="0" DoNotSaveLocal="0" RLECompression="1" AutoCreateStructsize="4096">
+      <Elements>
+        <Element Offset="0" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000000" Description="right" DisplayMethod="hexadecimal"/>
+        <Element Offset="4" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000004" Description="left" DisplayMethod="hexadecimal"/>
+        <Element Offset="8" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000008" Description="up" DisplayMethod="hexadecimal"/>
+        <Element Offset="12" Vartype="4 Bytes" Bytesize="4" OffsetHex="0000000C" Description="down" DisplayMethod="hexadecimal"/>
+        <Element Offset="16" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000010" Description="O" DisplayMethod="hexadecimal"/>
+        <Element Offset="20" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000014" Description="X" DisplayMethod="hexadecimal"/>
+        <Element Offset="24" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000018" Description="D" DisplayMethod="hexadecimal"/>
+        <Element Offset="28" Vartype="4 Bytes" Bytesize="4" OffsetHex="0000001C" Description="/\" DisplayMethod="hexadecimal"/>
+        <Element Offset="32" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000020" Description="R1" DisplayMethod="hexadecimal"/>
+        <Element Offset="36" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000024" Description="R2" DisplayMethod="hexadecimal"/>
+        <Element Offset="40" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000028" Description="L1" DisplayMethod="hexadecimal"/>
+        <Element Offset="44" Vartype="4 Bytes" Bytesize="4" OffsetHex="0000002C" Description="L2" DisplayMethod="hexadecimal"/>
+        <Element Offset="48" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000030" Description="select" DisplayMethod="hexadecimal"/>
+        <Element Offset="52" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000034" Description="start" DisplayMethod="hexadecimal"/>
+        <Element Offset="57" Vartype="Byte" Bytesize="1" OffsetHex="00000039" Description="L3-R3" DisplayMethod="hexadecimal"/>
+      </Elements>
+    </Structure>
+  </Structures>
+</CheatTable>
